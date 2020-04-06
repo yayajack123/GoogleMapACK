@@ -43,7 +43,7 @@
             }
         });
         // Add remote KMZ files as layers (NB if they are 3rd-party servers, they MUST have CORS enabled)
-        kmzParser.load('bali.kmz');
+        kmzParser.load('https://github.com/yayajack123/GoogleMapACK/blob/master/bali.kmz');
         // kmzParser.load('https://raruto.github.io/leaflet-kmz/examples/capitals.kmz');
         // kmzParser.load('https://raruto.github.io/leaflet-kmz/examples/globe.kmz');
 
