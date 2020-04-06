@@ -6,6 +6,7 @@
 	    <link rel="stylesheet" href="leaflet.label.css" />
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	    <script src="leaflet.label.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<style>
 			#info {position: absolute;top: 0;bottom: 30;left: 0;right: 0;}
 			#map {position: absolute;top: 30;bottom: 0;left: 0;right: 0;}
@@ -35,13 +36,38 @@
 			var countId = 0;
 
 			// menampilkan layer map OSM pada canvas
-			L.tileLayer('https://maps.tilehosting.com/styles/streets/{z}/{x}/{y}.png?key=YrAn6SOXelkLFXHv03o2',{
-				attribution:'<a href="https://www.maptiler.com/copyright/" target="_blank">Â© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">Â© OpenStreetMap contributors</a>',
+			L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+				maxZoom: 20,
+				subdomains:['mt0','mt1','mt2','mt3']
             }).addTo(map);
             
             map.on('mousemove',function(e){
 				document.getElementById("info").innerHTML="Koordinat : ("+e.latlng.lat+","+e.latlng.lng+")";
 			});
+
+			map.on('popupclose', function(e){
+                //map kembali ke titik awal dengan animasi
+                map.flyTo([-8.6002702,115.2456731],11, {
+                    pan: {
+                        animate: true,
+                        duration: 3 
+                    },
+                    zoom: {
+                        animate: true
+                    }
+                });
+            });
+
+			var polyLatLng = [
+				[-8.620059, 115.207958],
+				[-8.603596, 115.214224],
+				[-8.603426, 115.227184],
+				[-8.628376, 115.224781],
+			];
+
+			var polygon = L.polygon(polyLatLng,{
+				color: 'red'
+			}).addTo(map);
 
 			// menangkap event on-click pada map dan memunculkan sebuah marker
 				
@@ -51,7 +77,6 @@
 				iconUrl: 'marker.png',
 				iconSize: [40, 45], // size of the icon
 				});
-
 
 				var marker = L.marker([-8.753830, 115.177659],{
 					id: 1,icon: myIcon,
@@ -296,6 +321,67 @@
 				alert('Anda menekan tombol mouse klik kanan pada koordinat : '+e.latlng);
 			});
 
+
+			map.on('click', function(e){
+                countId = countId +1;
+                var marker = L.marker(e.latlng,{
+                    draggable: 'true',
+                        /* 
+                            saya menambahkan atribut baru berupa id untuk menandai indeks marker yang dibuat
+                            silahkan tambahkan atribut untuk menambahkan informasi lainnya jika diperlukan
+                        */
+                    id: countId,
+                }).addTo(map);
+
+                marker.on('click',function(e){
+					/* cara pengambilan nilai atribut dari marker*/
+					var id = marker.options.id;
+	        		popup.setLatLng([e.latlng.lat+0.02,e.latlng.lng]);
+	        		popup.setContent('Anda meng-klik marker '+id+' di koordinat :<br>'+'Latitude : '+marker.getLatLng().lat+'<br>Longitude : '+marker.getLatLng().lng+'');
+	        		popup.openOn(map);
+				});
+                markerData = {"lat":e.latlng.lat,"lng":e.latlng.lng}
+                $.ajax({
+                    url: "./saveToDatabase.php",
+                    type: "post",
+                    data: markerData,
+                    success: function (msg, status, jqXHR){
+                        //respon pemanggilan ./saveToDatabase.php
+                        alert(countId);	
+                    }
+                });	
+            });
+
+            $.ajax({
+                url: "./loadFromDatabase.php",
+                type: "get",
+                dataType: 'json',
+                success: function (msg, status, jqXHR){
+                    var polylineLatLng = [];
+                    //buat marker pada posisi yang tersimpan di database
+                    $.each(msg, function(i,obj){
+                        var marker = L.marker([msg[i].latitude,msg[i].longitude]).addTo(map);
+                        polylineLatLng.push([msg[i].latitude,msg[i].longitude]);
+                    });
+                    var polyline = L.polyline([
+                        polylineLatLng
+                    ]).addTo(map);
+                    // alert(polylineLatLng);
+
+                    //set map center pada marker yang tersimpan di database
+                    // map.setView([msg.lat,msg.lng],msg.zoom);	
+                }
+            });
+
+            function getDatas(){
+                $.getJson("getData.php", function(data){
+                    for (var i = 0; i < data.length; i++) {
+                        var marker = L.marker([-8.662917, 115.224437], {
+                            icon: myIcon,
+                        }).addTo(map)
+                    }
+                });
+            }	
 		</script>
 	</body>
 </html>
