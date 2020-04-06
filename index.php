@@ -44,7 +44,6 @@
         });
         // Add remote KMZ files as layers (NB if they are 3rd-party servers, they MUST have CORS enabled)
         kmzParser.load('bali.kmz');
-        kmzParser.load('bali-kabupaten.kmz');
         // kmzParser.load('https://raruto.github.io/leaflet-kmz/examples/globe.kmz');
 
         var control = L.control.layers(null, null, {
