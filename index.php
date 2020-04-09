@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kabupaten</title>
+    <title>Provinsi Bali</title>
     <style>
         html,
         body,
@@ -36,7 +36,7 @@
 <div class="container">
     <div class="card">
     <div class="card-header">
-    Maps Kabupaten di Bali
+    Maps Kabupaten di Provinsi Bali
         </div>
         <div class="card-body">
             <div id="map"></div>
