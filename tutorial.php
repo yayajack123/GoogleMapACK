@@ -9,7 +9,7 @@
         html,
         body,
         #map {
-            height: 500px;
+            height: 100%;
             width: 100%;
             padding: 0;
             margin: 0;
@@ -27,33 +27,18 @@
 </head>
 
 <body>
-<nav class="navbar navbar-light bg-light">
-  <a class="navbar-brand" href="#">
-    Bali Overview
-  </a>
-</nav>
-<br>
-<div class="container">
-    <div class="card">
-    <div class="card-header">
-    Maps Kabupaten di Provinsi Bali
-        </div>
-        <div class="card-body">
-            <div id="map"></div>
-        </div>
-    </div>
-    </div>
-    
+
+<div id="map"></div>    
     <script>
         var map = L.map('map');
         map.setView(new L.LatLng(-8.5723206,114.6667599),8.76);
 
-        var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    maxZoom: 17,
-    attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-    opacity: 0.90
-  });
-  OpenTopoMap.addTo(map);
+        var OpenTopoMap = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 17,
+            attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            opacity: 0.90
+        });
+        OpenTopoMap.addTo(map);
 
         // Instantiate KMZ parser (async)
         var kmzParser = new L.KMZParser({
@@ -63,7 +48,7 @@
             }
         });
         // Add remote KMZ files as layers (NB if they are 3rd-party servers, they MUST have CORS enabled)
-        kmzParser.load('baliregency.kmz');
+        kmzParser.load('bali.kmz');
         // kmzParser.load('https://raruto.github.io/leaflet-kmz/examples/globe.kmz');
 
         var control = L.control.layers(null, null, {
